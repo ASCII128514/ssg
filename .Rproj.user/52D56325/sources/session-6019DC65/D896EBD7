@@ -3,7 +3,7 @@
     "path": "~/code/ASCII128514/ssg/ssg.R",
     "project_path": "ssg.R",
     "type": "r_source",
-    "hash": "1976788010",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1666291346212.0,
@@ -13,15 +13,15 @@
         "tempName": "Untitled2",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "43,4",
-        "scrollLine": "26"
+        "cursorPosition": "34,13",
+        "scrollLine": "18"
     },
     "folds": "",
-    "lastKnownWriteTime": 1666293208,
+    "lastKnownWriteTime": 1666295232,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1666293208228,
+    "last_content_update": 1666295232866,
     "read_only": false,
     "read_only_alternatives": []
 }

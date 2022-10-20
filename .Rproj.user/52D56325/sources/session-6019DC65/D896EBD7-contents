@@ -1,4 +1,5 @@
 library(parallel)
+library(array)
 # define the parameters for the learning
 
 # this parameters are for Q Learning
@@ -26,7 +27,7 @@ bparams <- c(
 
 
 init_agent <- function(num_of_states) {
-  return(array(unif(1, -1, 1), dim=c(num_of_states, 5)))
+  return(matrix(runif(num_of_states * 5, -1, 1), nrow=num_of_states, ncol=5))
 }
 
 simulation <- function(qparams, bparams) {
@@ -40,7 +41,24 @@ simulation <- function(qparams, bparams) {
   steps <- bparams["num_step"];
   trials <- bparams["num_trial"];
 
-  for step in c(1:trials) {
-    
+  for (trial in c(1:trials)) {
+    for (step in c(1:steps)) {
+      # get all actions
+      
+      actions <- c(1, 1,1,1,1,1,1,1,1);
+      
+      decision <- selectAction(bparams, actions);
+      reward <- decision[2];
+      state <- decision[1];
+      is_ended <- decision[3];
+      
+      # update 
+      
+      
+      if (is_ended) {
+        # update the q table, break to the next iteration
+        break;
+      }
+    }
   }
 }
