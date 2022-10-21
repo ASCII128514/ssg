@@ -32,10 +32,9 @@ selectAction <- function(bparams, actions, state, rewards) {
   }
   
   if (bparams["cancelation"]) {
-    actions_cnt[1] <- actions_cnt[1] - actions_cnt[2];
-    actions_cnt[2] <- - actions_cnt[1];
-    actions_cnt[3] <- actions_cnt[3] - actions_cnt[4];
-    actions_cnt[4] <- - actions_cnt[3];
+    actions_cnt <- c(actions_cnt[1] - actions_cnt[2], actions_cnt[2] - actions_cnt[1],
+                     actions_cnt[3] - actions_cnt[4], actions_cnt[4] - actions_cnt[3],
+                     actions_cnt[5]);
   }
   
   vote <- max(actions_cnt);
@@ -88,7 +87,7 @@ selectAction <- function(bparams, actions, state, rewards) {
   if (state == bparams["end_pos"]) {
     reward <- rewards[1];
     reached_goal <- TRUE;
-  } else if ((column <= bparams["edge"]) || (column + bparams["obj_width"]-1 >= (n-r+1))) {
+  } else if ((column <= bparams["edge"]) || (column > (n-bparams["edge"]))) {
     reward <- rewards[3];
   }
   
