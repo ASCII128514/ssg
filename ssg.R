@@ -15,7 +15,7 @@ qparams <- c(
 
 # this parameters are for the game board settings
 bparams <- c(
-  "width" = 9,
+  "width" = 7,
   "height" = 9,
   "cancelation" = F,
   "edge" = 1,
@@ -40,25 +40,22 @@ simulation <- function(qparams, bparams) {
   
   # initialize all q tables for different agents.
   num_of_states <- (bparams["height"] - bparams["obj_height"] + 1) * (bparams["width"] - bparams["obj_width"] + 1);
-  agents <- replicate(board_size, init_agent(num_of_states));
-  agent2 <- agents;
+  agents <- replicate(bparams["width"], replicate(bparams["height"], init_agent(num_of_states)));
   steps <- bparams["num_step"];
   trials <- bparams["num_trial"];
-
   for (trial in c(1:trials)) {
     state <- bparams["start_pos"];
     prev_state <- state;
     for (step in c(1:steps)) {
       # get all actions
-      
+      # print(step);
       actions <- epsilon_greedy_selection(agents, state, qparams["epsilon"]);
-  
+      # print(dim(actions))
       decision <- selectAction(bparams, actions, state, rewards);
       reward <- decision[2];
       prev_state <- state;
       state <- decision[1];
       is_ended <- decision[3];
-      
       
       agents <- update_q(agents, reward, actions, prev_state, state, qparams)
       # update 
