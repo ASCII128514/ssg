@@ -60,7 +60,7 @@ simulation <- function(qparams, bparams, sim, sim_num) {
     states <- rep(-1, 10000);
     state <- bparams["start_pos"];
     prev_state <- state;
-    reinforecement <- 0;
+    reinforcement <- 0;
     step_cnt <- -1
     for (step in 1:steps) {
       # get all actions
@@ -74,7 +74,7 @@ simulation <- function(qparams, bparams, sim, sim_num) {
       
       state <- decision$state;
       reward <- decision$reward;
-      reinforecement <- reinforecement + reward;
+      reinforcement <- reinforcement + reward;
       is_ended <- decision$is_ended;
       # update the correct heat values.
       heats <- decision$heats;
