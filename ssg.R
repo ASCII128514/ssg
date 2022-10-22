@@ -107,10 +107,11 @@ run_sim <- function(qparams, bparams){
   # 1+ refers to the simulation number and trial number, and reinforcement
   sim <- data.frame(matrix(0, nrow = 1,ncol = 4+bparams["height"] * bparams["width"]))
   for (i in 1:bparams["num_simulation"]) {
+    cat("Simulation:", i);
     sim <- simulation(qparams, bparams, sim, i);
   }
   
-  write.csv(sim, cat("./data/",bparams["height"], "_" ,bparams["width"], ".csv", sep=""), row.names = FALSE);
+  write.csv(sim, paste("./data/",bparams["height"], "_" ,bparams["width"], ".csv", sep=""), row.names = FALSE);
 }
 
 run <- function() {
