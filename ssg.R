@@ -56,6 +56,7 @@ simulation <- function(qparams, bparams, sim, sim_num) {
   trials <- bparams["num_trial"];
   
   for (trial in 1:trials) {
+    print(trial)
     heats <- matrix(0, nrow = bparams["height"], ncol = bparams["width"]);
     states <- rep(-1, 10000);
     state <- bparams["start_pos"];
@@ -105,13 +106,15 @@ run_sim <- function(qparams, bparams){
   # one for recording all the heats, update after a trial is over.
   # /boardsizei/heats_k.csv
   # 1+ refers to the simulation number and trial number, and reinforcement
-  sim <- data.frame(matrix(0, nrow = 1,ncol = 4+bparams["height"] * bparams["width"]))
+  
   for (i in 1:bparams["num_simulation"]) {
     cat("Simulation:", i);
+    sim <- data.frame(matrix(0, nrow = 1,ncol = 4+bparams["height"] * bparams["width"]))
     sim <- simulation(qparams, bparams, sim, i);
+    write.table(sim, paste("./data/",bparams["height"], "_" ,bparams["width"], ".csv", sep=""), row.names = FALSE, append=TRUE, col.names=FALSE);
   }
   
-  write.csv(sim, paste("./data/",bparams["height"], "_" ,bparams["width"], ".csv", sep=""), row.names = FALSE);
+  
 }
 
 run <- function() {
