@@ -1,6 +1,6 @@
-library(foreach)
+# library(foreach)
 
-selectAction <- function(bparams, actions, state, rewards) {
+selectAction <- function(bparams, actions, state, rewards, heats) {
   
   # get the current position of the object
   width <- bparams["obj_width"];
@@ -21,22 +21,29 @@ selectAction <- function(bparams, actions, state, rewards) {
   under <- actions[r:(r+height-1), column:(column+width-1)];
   under_cnt <- table(under);
   by <- actions[max(r-1, 1):min(r+height, bh), max(column-1,1):min(column + width, bw)]
-
+  heats[max(r-1, 1):min(r+height, bh), max(column-1,1):min(column + width, bw)] <- 
+    heats[max(r-1, 1):min(r+height, bh), max(column-1,1):min(column + width, bw)] + 1
   by_cnt = table(by);
   
+  rlast <- dim(by)[1];
+  clast <- dim(by)[2];
   # remove the edge cells.
   if (r > 1 && column > 1) {
     by_cnt[by[1,1]] <- by_cnt[by[1,1]] - 1;
+    heats[r-1, column-1] <- heats[r-1, column-1] - 1;
   }
   if (r > 1 && column+ width <= bw) {
-    by_cnt[by[1, -1]] <- by_cnt[by[1, -1]] - 1;
+    by_cnt[by[1, clast]] <- by_cnt[by[1, clast]] - 1;
+    heats[r-1, column+width] <- heats[r-1, column+width] - 1;
   }
   
   if (r + height <= bh && column > 1) {
-    by_cnt[by[-1,1]] <- by_cnt[by[-1,1]] - 1;
+    by_cnt[by[rlast,1]] <- by_cnt[by[rlast,1]] - 1;
+    heats[r + height, column-1] <- heats[r + height, column-1] - 1;
   }
   if (r + height <= bh && column+ width <= bw) {
-    by_cnt[by[-1, -1]] <- by_cnt[by[-1, -1]] - 1;
+    by_cnt[by[rlast, clast]] <- by_cnt[by[rlast, clast]] - 1;
+    heats[r + height, column+width] <- heats[r + height, column+width] - 1;
   }
   
   # add entries to under_cnt that is na
@@ -131,5 +138,5 @@ selectAction <- function(bparams, actions, state, rewards) {
     reward <- rewards[3];
   }
   
-  return(c(state, reward, reached_goal));
+  return(list("state"= state, "reward"= reward,"is_ended"= reached_goal, "heats"= heats));
 }

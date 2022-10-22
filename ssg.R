@@ -1,7 +1,13 @@
-library(parallel)
-
 source("board.R")
 source("agent.R")
+
+
+# TODO:
+#   1. Add techniques for storing data while running the simulation
+#   2. Add Softmax
+#   3. If the runtime is slow, add parallel code
+#   4. If it is still slow, port everything to python using tenserflow
+
 # define the parameters for the learning
 
 # this parameters are for Q Learning
@@ -13,6 +19,8 @@ qparams <- c(
   
 )
 
+state_trace <- data.frame(matrix(ncol = 10000, nrow = 0))
+
 # this parameters are for the game board settings
 bparams <- c(
   "width" = 9,
@@ -23,9 +31,9 @@ bparams <- c(
   "end_pos" = 53,
   "obj_height" = 2,
   "obj_width" = 3,
-  "num_trial" = 1000,
-  "num_step" = 1000,
-  "num_simulation" = 1000
+  "num_trial" = 2000,
+  "num_step" = 10000,
+  "num_simulation" = 1
 )
 
 rewards <- c(100,-1,-50);
@@ -34,9 +42,12 @@ init_agent <- function(num_of_states) {
   return(matrix(runif(num_of_states * 5, -1, 1), nrow=num_of_states, ncol=5))
 }
 
-simulation <- function(qparams, bparams) {
+# return a list of heat map, reinforcement, steps needed
+simulation <- function(qparams, bparams, sim, sim_num) {
   # create a board of the given size.
   board_size <- bparams["height"] * bparams["width"];
+  
+  cnt <- nrow(sim)+1;
   
   # initialize all q tables for different agents.
   num_of_states <- (bparams["height"] - bparams["obj_height"] + 1) * (bparams["width"] - bparams["obj_width"] + 1);
@@ -44,29 +55,62 @@ simulation <- function(qparams, bparams) {
   steps <- bparams["num_step"];
   trials <- bparams["num_trial"];
   for (trial in 1:trials) {
+    heats <- matrix(0, nrow = bparams["height"], ncol = bparams["width"]);
+    states <- rep(-1, 10000);
     state <- bparams["start_pos"];
     prev_state <- state;
+    
+    step_cnt <- -1
     for (step in 1:steps) {
       # get all actions
       # print(step);
       actions <- epsilon_greedy_selection(agents, state, qparams["epsilon"]);
       # print(dim(actions))
-      decision <- selectAction(bparams, actions, state, rewards);
-      reward <- decision[2];
       prev_state <- state;
-      state <- decision[1];
-      # print(state)
-      is_ended <- decision[3];
+      # list[state, reward, is_ended, heats]
+      decision<- selectAction(bparams, actions, state, rewards, heats);
+      # reward <- decision[2];
+      
+      state <- decision$state;
+      reward <- decision$reward;
+      is_ended <- decision$is_ended;
+      # update the correct heat values.
+      heats <- decision$heats;
       
       agents <- update_q(agents, reward, actions, prev_state, state, qparams)
       # update 
       if (is_ended) {
-        print(step);
+        step_cnt <- step
         # print(agents - agent2);
         # update the q table, break to the next iteration
         break;
       }
     }
+    
+    dim(heats) <- board_size;
+    # print(heats);
+    sim[cnt,] <- c(sim_num, trial, step_cnt, heats);
+    # sim[cnt,3:board_size+2] <- heats;
+    # sim[cnt, 2] <- trial;
+    # sim[cnt, 1] <- sim_num;
+    cnt <- cnt + 1;
   }
+  return(sim)
 }
 
+
+run_sim <- function(qparams, bparams){
+  # one for recording all the heats, update after a trial is over.
+  # /boardsizei/heats_k.csv
+  # 1+ refers to the simulation number and trial number
+  sim <- data.frame(matrix(0, nrow = 1,ncol = 3+bparams["height"] * bparams["width"]))
+  for (i in 1:bparams["num_simulation"]) {
+    sim <- simulation(qparams, bparams, sim, i);
+  }
+  
+  write.csv(sim, "test.csv", row.names = FALSE);
+}
+
+run <- function() {
+  run_sim(qparams, bparams)
+}
