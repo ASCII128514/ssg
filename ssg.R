@@ -23,17 +23,17 @@ state_trace <- data.frame(matrix(ncol = 10000, nrow = 0))
 
 # this parameters are for the game board settings
 bparams <- c(
-  "width" = 9,
-  "height" = 9,
+  "width" = 7,
+  "height" = 6,
   "cancelation" = T,
   "edge" = 1,
   "start_pos" = 4,
   "end_pos" = 53,
   "obj_height" = 2,
   "obj_width" = 3,
-  "num_trial" = 2000,
+  "num_trial" = 1000,
   "num_step" = 10000,
-  "num_simulation" = 1
+  "num_simulation" = 1000
 )
 
 rewards <- c(100,-1,-50);
@@ -54,12 +54,13 @@ simulation <- function(qparams, bparams, sim, sim_num) {
   agents <- replicate(bparams["width"], replicate(bparams["height"], init_agent(num_of_states)));
   steps <- bparams["num_step"];
   trials <- bparams["num_trial"];
+  
   for (trial in 1:trials) {
     heats <- matrix(0, nrow = bparams["height"], ncol = bparams["width"]);
     states <- rep(-1, 10000);
     state <- bparams["start_pos"];
     prev_state <- state;
-    
+    reinforecement <- 0;
     step_cnt <- -1
     for (step in 1:steps) {
       # get all actions
@@ -73,6 +74,7 @@ simulation <- function(qparams, bparams, sim, sim_num) {
       
       state <- decision$state;
       reward <- decision$reward;
+      reinforecement <- reinforecement + reward;
       is_ended <- decision$is_ended;
       # update the correct heat values.
       heats <- decision$heats;
@@ -89,7 +91,7 @@ simulation <- function(qparams, bparams, sim, sim_num) {
     
     dim(heats) <- board_size;
     # print(heats);
-    sim[cnt,] <- c(sim_num, trial, step_cnt, heats);
+    sim[cnt,] <- c(sim_num, trial, step_cnt, reinforcement, heats);
     # sim[cnt,3:board_size+2] <- heats;
     # sim[cnt, 2] <- trial;
     # sim[cnt, 1] <- sim_num;
@@ -102,13 +104,13 @@ simulation <- function(qparams, bparams, sim, sim_num) {
 run_sim <- function(qparams, bparams){
   # one for recording all the heats, update after a trial is over.
   # /boardsizei/heats_k.csv
-  # 1+ refers to the simulation number and trial number
-  sim <- data.frame(matrix(0, nrow = 1,ncol = 3+bparams["height"] * bparams["width"]))
+  # 1+ refers to the simulation number and trial number, and reinforcement
+  sim <- data.frame(matrix(0, nrow = 1,ncol = 4+bparams["height"] * bparams["width"]))
   for (i in 1:bparams["num_simulation"]) {
     sim <- simulation(qparams, bparams, sim, i);
   }
   
-  write.csv(sim, "./data/test.csv", row.names = FALSE);
+  write.csv(sim, cat("./data/",bparams["height"], "_" ,bparams["width"], ".csv", sep=""), row.names = FALSE);
 }
 
 run <- function() {
