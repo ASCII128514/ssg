@@ -108,9 +108,12 @@ run_sim <- function(qparams, bparams){
     sim <- simulation(qparams, bparams, sim, i);
   }
   
-  write.csv(sim, "test.csv", row.names = FALSE);
+  write.csv(sim, "./data/test.csv", row.names = FALSE);
 }
 
 run <- function() {
+  if (!dir.exists("./data")) {
+    dir.create("data")
+  }
   run_sim(qparams, bparams)
 }
