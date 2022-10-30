@@ -100,7 +100,13 @@ selectAction <- function(bparams, actions, state, rewards, heats) {
   # } else {
   #   action <- sample(actions_highest_vote,1);
   # }
-  action <- sample(vote, 1);
+  action <- -1;
+  if (length(vote) == 1) {
+    action <- vote;
+  }
+  else {
+    action <- sample(vote, 1);
+  }
   if (action == 1) {
     # move up
     if (r < m) {

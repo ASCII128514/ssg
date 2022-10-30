@@ -39,6 +39,9 @@ choose_best_action <- function(agents, i, j, state){
   q_table <- c(agents[state,,i,j])
   
     # print(c(i,j));
+  if (length(which(q_table==max(q_table))) == 1) {
+    return(which(q_table==max(q_table)));
+  }
   return (sample(which(q_table==max(q_table)), 1));
 }
 

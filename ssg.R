@@ -90,12 +90,9 @@ simulation <- function(qparams, bparams, sim, sim_num) {
       }
     }
     
+    print(c(trial, step_cnt));
     dim(heats) <- board_size;
-    # print(heats);
     sim[cnt,] <- c(sim_num, trial, step_cnt, reinforcement, heats);
-    # sim[cnt,3:board_size+2] <- heats;
-    # sim[cnt, 2] <- trial;
-    # sim[cnt, 1] <- sim_num;
     cnt <- cnt + 1;
   }
   return(sim)
