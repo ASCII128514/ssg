@@ -24,16 +24,16 @@ state_trace <- data.frame(matrix(ncol = 10000, nrow = 0))
 # this parameters are for the game board settings
 bparams <- c(
   "width" = 7,
-  "height" = 6,
+  "height" = 7,
   "cancelation" = T,
   "edge" = 1,
-  "start_pos" = 4,
-  "end_pos" = 53,
+  "start_pos" = 3,
+  "end_pos" = 28,
   "obj_height" = 2,
   "obj_width" = 3,
   "num_trial" = 1000,
   "num_step" = 10000,
-  "num_simulation" = 1000
+  "num_simulation" = 10
 )
 
 rewards <- c(100,-1,-50);
