@@ -1,6 +1,6 @@
 source("board.R")
 source("agent.R")
-
+set.seed(Sys.time());
 
 # TODO:
 #   1. Add techniques for storing data while running the simulation
