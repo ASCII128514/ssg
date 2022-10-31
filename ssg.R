@@ -12,7 +12,7 @@ set.seed(Sys.time());
 
 # this parameters are for Q Learning
 qparams <- c(
-  "epsilon" = 0.01,
+  "epsilon" = 0.15,
   "epsilon_greedy?" = TRUE,
   "gamma" = 0.9,
   "alpha" = 0.1
@@ -31,9 +31,9 @@ bparams <- c(
   "end_pos" = 28,
   "obj_height" = 2,
   "obj_width" = 3,
-  "num_trial" = 1000,
+  "num_trial" = 4000,
   "num_step" = 10000,
-  "num_simulation" = 10
+  "num_simulation" = 100
 )
 
 rewards <- c(100,-1,-50);
@@ -56,45 +56,72 @@ simulation <- function(qparams, bparams, sim, sim_num) {
   trials <- bparams["num_trial"];
   
   for (trial in 1:trials) {
-    print(trial)
     heats <- matrix(0, nrow = bparams["height"], ncol = bparams["width"]);
     states <- rep(-1, 10000);
     state <- bparams["start_pos"];
     prev_state <- state;
     reinforcement <- 0;
     step_cnt <- -1
-    for (step in 1:steps) {
-      # get all actions
-      # print(step);
-      actions <- epsilon_greedy_selection(agents, state, qparams["epsilon"]);
-      # print(dim(actions))
-      prev_state <- state;
-      # list[state, reward, is_ended, heats]
-      decision<- selectAction(bparams, actions, state, rewards, heats);
-      # reward <- decision[2];
-      
-      state <- decision$state;
-      reward <- decision$reward;
-      reinforcement <- reinforcement + reward;
-      is_ended <- decision$is_ended;
-      # update the correct heat values.
-      heats <- decision$heats;
-      
-      agents <- update_q(agents, reward, actions, prev_state, state, qparams)
-      # update 
-      if (is_ended) {
-        step_cnt <- step
-        # print(agents - agent2);
-        # update the q table, break to the next iteration
-        break;
+    if (trial %% 2 == 0) {
+      for (step in 1:steps) {
+        # get all actions
+        # print(step);
+        actions <- epsilon_greedy_selection(agents, state, 0);
+        # print(dim(actions))
+        prev_state <- state;
+        # list[state, reward, is_ended, heats]
+        decision<- selectAction(bparams, actions, state, rewards, heats);
+        # reward <- decision[2];
+        
+        state <- decision$state;
+        reward <- decision$reward;
+        reinforcement <- reinforcement + reward;
+        is_ended <- decision$is_ended;
+        # update the correct heat values.
+        heats <- decision$heats;
+        
+        # agents <- update_q(agents, reward, actions, prev_state, state, qparams)
+        # update 
+        if (is_ended) {
+          step_cnt <- step
+          # print(agents - agent2);
+          # update the q table, break to the next iteration
+          break;
+        }
+      }
+    } else {
+      for (step in 1:steps) {
+        # get all actions
+        # print(step);
+        actions <- epsilon_greedy_selection(agents, state, qparams["epsilon"]);
+        # print(dim(actions))
+        prev_state <- state;
+        # list[state, reward, is_ended, heats]
+        decision<- selectAction(bparams, actions, state, rewards, heats);
+        # reward <- decision[2];
+        
+        state <- decision$state;
+        reward <- decision$reward;
+        reinforcement <- reinforcement + reward;
+        is_ended <- decision$is_ended;
+        # update the correct heat values.
+        heats <- decision$heats;
+        
+        agents <- update_q(agents, reward, actions, prev_state, state, qparams)
+        # update 
+        if (is_ended) {
+          step_cnt <- step
+          # print(agents - agent2);
+          # update the q table, break to the next iteration
+          break;
+        }
       }
     }
-    
     print(c(trial, step_cnt));
     dim(heats) <- board_size;
     sim[cnt,] <- c(sim_num, trial, step_cnt, reinforcement, heats);
     cnt <- cnt + 1;
-  }
+    }
   return(sim)
 }
 
