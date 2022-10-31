@@ -107,6 +107,10 @@ selectAction <- function(bparams, actions, state, rewards, heats) {
   else {
     action <- sample(vote, 1);
   }
+  
+  if(actions_cnt[action] == 0) {
+    action <- 5;
+  }
   if (action == 1) {
     # move up
     if (r < m) {
